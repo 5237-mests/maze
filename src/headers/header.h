@@ -6,7 +6,9 @@
 #include <stdio.h>
 #include "./globalvariables.h"
 
-App init();
+void init();
 void display();
+SideLen len(Point p, double teta, int **map, int size);
+double min(double x, double y);
 
 #endif

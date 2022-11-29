@@ -21,10 +21,12 @@ typedef struct App
 	int scw;
 	int sch;
 	double teta;
-	//int *worldmap;
+	int **map;
 	int map_size;
 	SDL_Window *win;
 	SDL_Renderer *ren;
+	SDL_Texture *floor, *ceil;
+
 	
 } App;
 
@@ -35,12 +37,17 @@ typedef struct App
  *@side: wall side vertical or horizontal
  *
  */
-typedef struct map
+
+typedef struct SideLen
 {
-	int length;
-	char *side;
-} map;
+	double len;
+	int face;
+} SideLen;
 
+typedef struct Point
+{
+	double x;
+	double y;
+} Point;
 
-int mesfin;
 #endif
