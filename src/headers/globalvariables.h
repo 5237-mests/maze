@@ -20,6 +20,7 @@ typedef struct App
 	double py;
 	int scw;
 	int sch;
+	double alpha;
 	double teta;
 	int **map;
 	int map_size;

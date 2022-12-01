@@ -16,68 +16,79 @@ double min(double x, double y)
 
 /**
  *wall - draw wall
- *
+ *@app: struct
  */
 void wall(App *app)
 {
-	double teta, Lo, Lp, Ln;
+	double Lo, Lp, Ln;
+	SDL_Rect rect;
 	Point p;
 	SideLen SL;
+
 	p.x = app->px;
 	p.y = app->py;
-	
+
 	SDL_SetRenderDrawColor(app->ren, 255, 0, 0, SDL_ALPHA_OPAQUE);
 	Lo = len(p, 60, app->map, 16).len;
 
 	for (int i = 0; i < app->scw; i++)
-	{	
-		teta = 30 + (i * 60)/app->scw;
-		//SL = len(p, teta, app->map, 16) ;
-		Lp = len(p, teta, app->map, 16).len * cos(30 - (i * 60)/app->scw);
-		Ln = Lo/Lp * 50; /* cos(30 - (i * 60)/app->scw) * M_PI / 180 * 30*/ 
-		
-		SDL_RenderDrawLine(app->ren, i, app->sch/2  - Ln * 0.20, i, app->sch/2 + Ln * 0.20);
-		//SDL_RenderDrawLine(app->ren, i, app->sch/2 - SL.len * 50, i, app->sch/2 + SL.len * 50);
+	{
+		app->teta = app->alpha + (i * 60) / app->scw;
+		SL = len(p, app->teta, app->map, 16);
+		/* Lp = len(p, teta, app->map, 16).len * cos(30 - (i * 60)/app->scw); */
+		/* Ln = Lo/Lp * 50; cos(30 - (i * 60)/app->scw) * M_PI / 180 * 30*/
+
+		/* SDL_RenderDrawLine(app->ren, i, app->sch/2  - Ln * 0.20, i, app->sch/2 + Ln * 0.20); */
+		SDL_RenderDrawLine(app->ren, i, app->sch / 2 - SL.len * 30, i, app->sch / 2 + SL.len * 30);
 	}
 
-
+	for (int row = 0; row < 16; row++)
+	{
+		for (int column = 0; column < 16; column++)
+		{
+			if (app->map[row][column] != 0)
+			{
+				SDL_SetRenderDrawColor(app->ren, 0x99, 0x9F, 0xFF, 0xFF);
+				rect.w = 1;
+				rect.h = 1;
+				rect.x = column * rect.w;
+				rect.y = row * rect.h;
+				SDL_RenderFillRect(app->ren, &rect);
+			}
+		}
+	}
 
 }
 
 /**
- *
- *
- *
+ *player - player func
+ *@app: struct
  */
 void player(App *app)
 {
 	SDL_Rect pl;
 	SDL_SetRenderDrawColor(app->ren, 0xFF, 0xFF, 0xFF, 0xFF);
-	pl.w = 8;
-        pl.h = 8;
-        pl.x = app->px;
-        pl.y = app->py;
-        SDL_RenderFillRect(app->ren, &pl);
-
+	pl.w = 1;
+	pl.h = 1;
+	pl.x = app->px;
+	pl.y = app->py;
+	SDL_RenderFillRect(app->ren, &pl);
 }
 
 /**
- *
- *
- *
+ *floor_ceil - draw ceil and floor
+ *@app: struct
  */
 void floor_ceil(App *app)
 {
 	SDL_Rect cr, fr;
 	cr.w = fr.w = app->scw;
-	cr.h = fr.h = app->sch/2;
+	cr.h = fr.h = app->sch / 2;
 	cr.x = fr.x = cr.y = 0;
-	fr.y = app->sch/2;
-	
+	fr.y = app->sch / 2;
 	SDL_RenderCopy(app->ren, app->ceil, &cr, &cr);
 	SDL_RenderCopy(app->ren, app->floor, &fr, &fr);
 }
-
 
 /**
  *display - init sdl win on scren
@@ -100,30 +111,71 @@ void display(App *app)
 			{
 					if (e.key.keysym.sym == SDLK_LEFT)
 					{
-						app->px -= 0.31;
+						if (app->px <= 1)
+						{
+							app->px += 0.1;
+						} else
+						{
+							app->px -= 0.1;
+						}
 					}
 					else if (e.key.keysym.sym == SDLK_RIGHT)
 					{
-						app->px += 0.31;
+						if (app->px >= 15)
+						{	app->px -= 0.1;
+						}
+						else
+						{
+							app->px += 0.1;
+						}
 					}
 					else if (e.key.keysym.sym == SDLK_DOWN)
 					{
-						app->py += 0.31;
+						if (app->py >= 15)
+						{	app->py -= 0.1;
+						}
+						else
+						{
+							app->py += 0.1;
+						}
 					}
 					else if (e.key.keysym.sym == SDLK_UP)
 					{
-						app->py -= 0.31;
+						if (app->py <= 1)
+						{	app->py += 0.1;
+						}
+						else
+						{
+							app->py -= 0.1;
+						}
+					} else if (e.key.keysym.sym == SDLK_a)
+					{
+						if (app->alpha <= 0)
+						{
+							app->alpha += 360;
+						}
+						else
+						{
+							app->alpha -= 3;
+						}
+					} else if (e.key.keysym.sym == SDLK_w)
+					{
+						if (app->alpha >= 360)
+						{
+							app->alpha -= 360;
+						}
+						else
+						{
+							app->alpha += 3;
+						}
 					}
-
 			}
-			
 		}
-
 		SDL_SetRenderDrawColor(app->ren, 50, 50, 50, 255);
 		SDL_RenderClear(app->ren);
 		floor_ceil(app);
 		wall(app);
-		//player(app);
+		player(app);
 		SDL_UpdateWindowSurface(app->win);
 		SDL_RenderPresent(app->ren);
 	}
