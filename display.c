@@ -20,7 +20,7 @@ double min(double x, double y)
  */
 void wall(App *app)
 {
-	double Lo, Lp, Ln;
+	double Lo, Lp, Ln, angle, angle2, side;
 	SDL_Rect rect;
 	Point p;
 	SideLen SL;
@@ -29,17 +29,20 @@ void wall(App *app)
 	p.y = app->py;
 
 	SDL_SetRenderDrawColor(app->ren, 255, 0, 0, SDL_ALPHA_OPAQUE);
-	Lo = len(p, 60, app->map, 16).len;
+	angle = app->alpha + 30;
+	SL = len(p, angle, app->map, 16);
+	side = SL.face;
+	Lo = SL.len;
+	if (side)
+		SDL_SetRenderDrawColor(app->ren, 255, 255, 255, SDL_ALPHA_OPAQUE);
 
 	for (int i = 0; i < app->scw; i++)
 	{
 		app->teta = app->alpha + (i * 60) / app->scw;
-		SL = len(p, app->teta, app->map, 16);
-		/* Lp = len(p, teta, app->map, 16).len * cos(30 - (i * 60)/app->scw); */
-		/* Ln = Lo/Lp * 50; cos(30 - (i * 60)/app->scw) * M_PI / 180 * 30*/
-
-		/* SDL_RenderDrawLine(app->ren, i, app->sch/2  - Ln * 0.20, i, app->sch/2 + Ln * 0.20); */
-		SDL_RenderDrawLine(app->ren, i, app->sch / 2 - SL.len * 30, i, app->sch / 2 + SL.len * 30);
+		angle2 = app->alpha - ((i * 60) / app->scw);
+		Lp = len(p, app->teta, app->map, 16).len;
+		Ln = (Lo / (Lp * cos(angle2 * M_PI / 180)));
+		SDL_RenderDrawLine(app->ren, i, app->sch/2  - Ln * 10, i, app->sch/2 + Ln * 10);
 	}
 
 	for (int row = 0; row < 16; row++)
@@ -160,7 +163,7 @@ void display(App *app)
 						}
 					} else if (e.key.keysym.sym == SDLK_w)
 					{
-						if (app->alpha >= 360)
+						if (app->alpha >= 300)
 						{
 							app->alpha -= 360;
 						}
