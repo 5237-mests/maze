@@ -42,7 +42,7 @@ void wall(App *app)
 		angle2 = app->alpha - ((i * 60) / app->scw);
 		Lp = len(p, app->teta, app->map, 16).len;
 		Ln = (Lo / (Lp * cos(angle2 * M_PI / 180)));
-		SDL_RenderDrawLine(app->ren, i, app->sch/2  - Ln * 10, i, app->sch/2 + Ln * 10);
+		SDL_RenderDrawLine(app->ren, i, app->sch / 2  - Ln * 10, i, app->sch / 2 + Ln * 10);
 	}
 
 	for (int row = 0; row < 16; row++)
